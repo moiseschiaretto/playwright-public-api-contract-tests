@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "firstName": "Emily",
+      "lastName": "Johnson",
+      "age": 28
+    }
+  ],
+  "total": 208,
+  "skip": 0,
+  "limit": 30
+}

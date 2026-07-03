@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "body": "sample comment body",
+  "postId": 1,
+  "likes": 5,
+  "user": {
+    "id": 1,
+    "username": "emilys",
+    "fullName": "Emily Johnson"
+  }
+}

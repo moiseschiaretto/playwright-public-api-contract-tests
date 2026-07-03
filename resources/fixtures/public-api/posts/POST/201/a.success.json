@@ -1,0 +1,14 @@
+{
+  "id": 1,
+  "title": "sample post title",
+  "body": "sample post body",
+  "userId": 1,
+  "tags": [
+    "fiction"
+  ],
+  "reactions": {
+    "likes": 10,
+    "dislikes": 1
+  },
+  "views": 100
+}

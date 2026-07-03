@@ -1,0 +1,10 @@
+{
+  "id": 341,
+  "body": "Comentário de teste automatizado",
+  "postId": 1,
+  "user": {
+    "id": 1,
+    "username": "emilys",
+    "fullName": "Emily Johnson"
+  }
+}

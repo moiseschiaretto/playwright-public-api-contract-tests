@@ -1,0 +1,35 @@
+{
+  "name": "public-api-playwright-contract-tests",
+  "version": "1.0.0",
+  "description": "Automação de testes de API (Playwright) com testes de contrato, usando a API pública DummyJSON",
+  "main": "index.js",
+  "scripts": {
+    "refresh-token": "node src/utils/auth-token.js",
+    "test:refresh-token": "node src/utils/auth-token.js && npx playwright test",
+    "test": "npx playwright test",
+    "allure:clean": "node -e \"require('fs').rmSync('allure-results',{recursive:true,force:true});require('fs').rmSync('allure-report',{recursive:true,force:true})\"",
+    "allure:generate": "npx allure-commandline generate allure-results --clean -o allure-report",
+    "allure:open": "npx allure-commandline open allure-report",
+    "allure:serve": "npx allure-commandline serve allure-results",
+    "test:allure": "npm run allure:clean && npm run test && npm run allure:generate"
+  },
+  "keywords": [
+    "playwright",
+    "api-testing",
+    "contract-testing",
+    "qa",
+    "sdet"
+  ],
+  "author": "Moisés Chiaretto",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "allure-playwright": "^3.4.3",
+    "allure-commandline": "^2.34.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "joi": "^18.0.2",
+    "to-json-schema": "^0.2.5"
+  }
+}

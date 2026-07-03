@@ -1,0 +1,13 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "todo": "sample todo",
+      "completed": false,
+      "userId": 26
+    }
+  ],
+  "total": 150,
+  "skip": 0,
+  "limit": 30
+}

@@ -1,0 +1,25 @@
+{
+  "id": 1,
+  "name": "sample recipe",
+  "ingredients": [
+    "item"
+  ],
+  "instructions": [
+    "step"
+  ],
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 20,
+  "servings": 4,
+  "difficulty": "Easy",
+  "cuisine": "American",
+  "caloriesPerServing": 300,
+  "tags": [
+    "sample"
+  ],
+  "image": "https://cdn.dummyjson.com/sample.png",
+  "rating": 4.5,
+  "reviewCount": 10,
+  "mealType": [
+    "Dinner"
+  ]
+}

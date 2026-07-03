@@ -1,0 +1,12 @@
+{
+  "quotes": [
+    {
+      "id": 1,
+      "quote": "sample",
+      "author": "Author"
+    }
+  ],
+  "total": 1454,
+  "skip": 0,
+  "limit": 30
+}
