@@ -2,6 +2,10 @@
 
 Testes de integração e contrato de API pública (https://dummyjson.com/docs), com Playwright.
 
+![Testes](https://img.shields.io/badge/testes-55%20passando-brightgreen)
+![Playwright](https://img.shields.io/badge/Playwright-contract%20testing-2EAD33)
+![CI](https://img.shields.io/badge/CI-GitHub%20Actions-blue)
+
 ## 🚀 Como Começar
 
 ```bash
@@ -25,13 +29,29 @@ npm run test           # Só executa os testes
 ```
 
 Relatório HTML: `npx playwright show-report`
-Relatório Allure: `npm run test:allure` (gera os dados e o relatório final via `allure-commandline`, sem precisar instalar o Allure no sistema)
+Relatório Allure: `npm run test:allure` e para acessar o report allure no navegador Web `npm run allure:open` (gera os dados e o relatório final via `allure-commandline`, sem precisar instalar o Allure no sistema)
 
 > ⚠️ **Não abra `allure-report/index.html` direto no navegador** (duplo clique / `file://`). O Allure carrega os dados via requisições JS, que o Chrome/Firefox bloqueiam por segurança quando o arquivo é aberto localmente sem servidor. Use sempre:
 > ```bash
 > npm run allure:open
 > ```
 > Isso sobe um servidor local e abre o relatório completo, com todos os dados carregando corretamente.
+
+---
+
+## 📸 Resultados de execução
+
+**Execução via terminal (VSCode) — 55 testes passando:**
+
+![Execução dos testes no terminal](docs/screenshots/execucao-testes-terminal.png)
+
+**Relatório Allure — Visão geral (100% de sucesso):**
+
+![Visão geral do relatório Allure](docs/screenshots/allure-relatorio-visao-geral.png)
+
+**Relatório Allure — Pacotes por recurso:**
+
+![Pacotes do relatório Allure](docs/screenshots/allure-pacotes.png)
 
 ---
 
@@ -62,6 +82,8 @@ tests/
   {recurso}/{METODO}/{status}/*.spec.js
 resources/fixtures/
   public-api/{recurso}/{METODO}/{status}/*.json   # "contratos" esperados (schema, não valor exato)
+docs/
+  screenshots/          # capturas de tela da execução e dos relatórios
 logs/                    # responses reais salvas a cada execução (não versionado)
 ```
 
