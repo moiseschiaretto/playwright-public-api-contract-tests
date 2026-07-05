@@ -29,13 +29,30 @@ npm run test           # Só executa os testes
 ```
 
 Relatório HTML: `npx playwright show-report`
-Relatório Allure: `npm run test:allure` e para acessar o report allure no navegador Web `npm run allure:open` (gera os dados e o relatório final via `allure-commandline`, sem precisar instalar o Allure no sistema)
+
+## Relatório Allure
+
+```bash
+npm run test:allure   # roda os testes + gera o relatório
+npm run allure:open    # sobe um servidor local e abre o relatório no navegador
+```
+
+(gera os dados e o relatório final via `allure-commandline`, sem precisar instalar o Allure no sistema)
 
 > ⚠️ **Não abra `allure-report/index.html` direto no navegador** (duplo clique / `file://`). O Allure carrega os dados via requisições JS, que o Chrome/Firefox bloqueiam por segurança quando o arquivo é aberto localmente sem servidor. Use sempre:
 > ```bash
 > npm run allure:open
 > ```
 > Isso sobe um servidor local e abre o relatório completo, com todos os dados carregando corretamente.
+
+Comandos individuais, se preferir rodar por etapas:
+
+```bash
+npm run allure:clean      # limpa allure-results/ e allure-report/
+npm run test               # gera allure-results/
+npm run allure:generate   # gera o HTML a partir dos resultados
+npm run allure:open        # serve e abre o relatório
+```
 
 ---
 
@@ -52,6 +69,10 @@ Relatório Allure: `npm run test:allure` e para acessar o report allure no naveg
 **Relatório Allure — Pacotes por recurso:**
 
 ![Pacotes do relatório Allure](docs/screenshots/allure-pacotes.png)
+
+**Relatório Allure — Gráficos (status, gravidade e duração):**
+
+![Gráficos do relatório Allure](docs/screenshots/allure-graficos.png)
 
 ---
 
