@@ -66,6 +66,10 @@ npm run allure:open        # serve e abre o relatório
 
 ![Visão geral do relatório Allure](docs/screenshots/allure-relatorio-visao-geral.png)
 
+**Relatório Allure — Suítes (cenários organizados por endpoint/método/status):**
+
+![Suítes do relatório Allure](docs/screenshots/allure-suites.png)
+
 **Relatório Allure — Pacotes por recurso:**
 
 ![Pacotes do relatório Allure](docs/screenshots/allure-pacotes.png)
