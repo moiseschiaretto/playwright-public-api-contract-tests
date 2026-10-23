@@ -1,28 +1,59 @@
-const { test, expect } = require('@playwright/test');
-const { makeRequest } = require('../../../../src/utils/requests');
-const { validateResponseWithJsonSchema } = require('../../../../src/utils/validators');
-const { loadExpectedData } = require('../../../../src/utils/files');
-const environment = require('../../../../src/config/environment');
+const {
+    test,
+    expect
+} = require('@playwright/test');
+
+const {
+    PostService
+} = require('#services/PostService');
+
+const {
+    validateResponseWithJsonSchema
+} = require('#utils/validators');
+
+const {
+    loadExpectedData,
+    loadJsonFixture
+} = require('#utils/files');
 
 // PUT /posts/{id} - simula atualização de post
 test('PUT /posts/1 - status 200', async ({ request }) => {
+    // Pasta onde fica o contrato esperado e onde o log da resposta será salvo
     const folderPath = "public-api/posts/PUT/200";
 
-    const { responseData } = await makeRequest({
-        request,
-        method: 'PUT',
-        baseURL: environment.api.base_url,
-        endPoint: '/posts/1',
-        token: environment.api.token,
-        body: {
-            "title": "Título de post atualizado"
-        },
+    // Cria o serviço de posts, que sabe montar as chamadas desse recurso
+    const postService = new PostService(request);
+
+    // Carrega o corpo da requisição (JSON Request) do arquivo
+    const body = loadJsonFixture(
+        'resources/fixtures/public-api/posts/PUT/request/valid.json'
+    );
+
+    // Atualiza o título do post de id 1 e confere o status 200
+    const {
+        responseData
+    } = await postService.putId({
+        id: 1,
+        body,
         expectedStatus: 200,
-        showResponseLog: false,
         saveResponseLog: folderPath
     });
 
-    const expectedShape = loadExpectedData(folderPath, 'a.success.json');
-    await validateResponseWithJsonSchema(responseData, expectedShape, { validationMode: 'allow-extra' });
-    expect(responseData.title).toBe('Título de post atualizado');
+    // Carrega o JSON de referência (contrato) para comparar com a resposta
+    const expectedShape = loadExpectedData(
+        folderPath,
+        'a.success.json'
+    );
+
+    // Valida se a estrutura e os tipos da resposta seguem o contrato
+    await validateResponseWithJsonSchema(
+        responseData,
+        expectedShape,
+        {
+            validationMode: 'allow-extra'
+        }
+    );
+
+    // Confere se a API devolveu o título atualizado
+    expect(responseData.title).toBe(body.title);
 });

@@ -1,28 +1,53 @@
-const { test, expect } = require('@playwright/test');
-const { makeRequest } = require('../../../../src/utils/requests');
-const { validateResponseWithJsonSchema } = require('../../../../src/utils/validators');
-const { loadExpectedData } = require('../../../../src/utils/files');
-const environment = require('../../../../src/config/environment');
+const {
+    test
+} = require('@playwright/test');
+
+const {
+    AuthService
+} = require('#services/AuthService');
+
+const {
+    validateResponseWithJsonSchema
+} = require('#utils/validators');
+
+const {
+    loadExpectedData
+} = require('#utils/files');
+
+const environment = require('#config/environment');
 
 // POST /auth/login - senha incorreta retorna 400
 test('POST /auth/login - status 400', async ({ request }) => {
+    // Pasta onde fica o contrato esperado e onde o log da resposta será salvo
     const folderPath = "public-api/auth/POST/400";
 
-    const { responseData } = await makeRequest({
-        request,
-        method: 'POST',
-        baseURL: environment.api.base_url,
-        endPoint: '/auth/login',
-        token: environment.api.token,
+    // Cria o serviço de autenticação, que sabe montar as chamadas desse recurso
+    const authService = new AuthService(request);
+
+    // Tenta o login com senha errada e confere se a API recusa com status 400
+    const {
+        responseData
+    } = await authService.postLogin({
         body: {
             username: environment.api.username,
             password: 'senha-errada-de-proposito'
         },
         expectedStatus: 400,
-        showResponseLog: false,
         saveResponseLog: folderPath
     });
 
-    const expectedShape = loadExpectedData(folderPath, 'a.error.json');
-    await validateResponseWithJsonSchema(responseData, expectedShape, { validationMode: 'allow-extra' });
+    // Carrega o JSON de referência (contrato) para comparar com a resposta
+    const expectedShape = loadExpectedData(
+        folderPath,
+        'a.error.json'
+    );
+
+    // Valida se a estrutura e os tipos da resposta seguem o contrato
+    await validateResponseWithJsonSchema(
+        responseData,
+        expectedShape,
+        {
+            validationMode: 'allow-extra'
+        }
+    );
 });

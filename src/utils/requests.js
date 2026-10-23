@@ -1,4 +1,6 @@
-const { expect } = require('@playwright/test');
+const {
+    expect
+} = require('@playwright/test');
 
 async function makeRequest(config) {
     const {
@@ -52,7 +54,9 @@ async function makeRequest(config) {
         }
 
         if (saveResponseLog) {
-            const { saveResponseToFile } = require('./files');
+            const {
+                saveResponseToFile
+            } = require('#utils/files');
             await saveResponseToFile(responseData, saveResponseLog);
         }
 

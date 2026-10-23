@@ -1,4 +1,6 @@
-const { expect } = require('@playwright/test');
+const {
+    expect
+} = require('@playwright/test');
 const Joi = require('joi');
 const toJsonSchema = require('to-json-schema');
 
@@ -8,7 +10,9 @@ async function validateResponseWithJsonSchema(responseData, expectedJson, option
     const config = buildValidationConfig(options);
     const joiSchema = generateJoiSchema(expectedJson, config);
 
-    const { error } = joiSchema.validate(responseData, {
+    const {
+        error
+    } = joiSchema.validate(responseData, {
         allowUnknown: config.allowUnknown,
         abortEarly: false
     });
@@ -24,7 +28,10 @@ async function validateResponseWithJsonSchema(responseData, expectedJson, option
 }
 
 function buildValidationConfig(options) {
-    const { validationMode = 'allow-extra', strictMode = null } = options;
+    const {
+        validationMode = 'allow-extra',
+        strictMode = null
+    } = options;
     const modes = {
         'allow-extra': { allowUnknown: true, strictMode: false },
         'exact-schema': { allowUnknown: false, strictMode: true }

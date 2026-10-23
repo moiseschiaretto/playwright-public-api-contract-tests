@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Automação de testes de API (Playwright) com testes de contrato, usando a API pública DummyJSON",
   "main": "index.js",
+  "imports": {
+    "#config/*": "./src/config/*.js",
+    "#utils/*": "./src/utils/*.js",
+    "#services/*": "./src/services/*.js"
+  },
   "scripts": {
     "refresh-token": "node src/utils/auth-token.js",
     "test:refresh-token": "node src/utils/auth-token.js && npx playwright test",

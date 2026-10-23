@@ -45,7 +45,7 @@ async function saveResponseToFile(responseData, folderPath) {
 }
 
 function loadJsonFixture(relativePath) {
-    const jsonFilePath = path.join(__dirname, '../..', relativePath);
+    const jsonFilePath = path.join(process.cwd(), relativePath);
     return JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
 }
 

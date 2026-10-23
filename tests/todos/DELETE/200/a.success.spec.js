@@ -1,25 +1,52 @@
-const { test, expect } = require('@playwright/test');
-const { makeRequest } = require('../../../../src/utils/requests');
-const { validateResponseWithJsonSchema } = require('../../../../src/utils/validators');
-const { loadExpectedData } = require('../../../../src/utils/files');
-const environment = require('../../../../src/config/environment');
+const {
+    test,
+    expect
+} = require('@playwright/test');
+
+const {
+    TodoService
+} = require('#services/TodoService');
+
+const {
+    validateResponseWithJsonSchema
+} = require('#utils/validators');
+
+const {
+    loadExpectedData
+} = require('#utils/files');
 
 // DELETE /todos/{id} - simula exclusão de tarefa
 test('DELETE /todos/1 - status 200', async ({ request }) => {
+    // Pasta onde fica o contrato esperado e onde o log da resposta será salvo
     const folderPath = "public-api/todos/DELETE/200";
 
-    const { responseData } = await makeRequest({
-        request,
-        method: 'DELETE',
-        baseURL: environment.api.base_url,
-        endPoint: '/todos/1',
-        token: environment.api.token,
+    // Cria o serviço de tarefas, que sabe montar as chamadas desse recurso
+    const todoService = new TodoService(request);
+
+    // Exclui a tarefa de id 1 e confere o status 200
+    const {
+        responseData
+    } = await todoService.deleteId({
+        id: 1,
         expectedStatus: 200,
-        showResponseLog: false,
         saveResponseLog: folderPath
     });
 
-    const expectedShape = loadExpectedData(folderPath, 'a.success.json');
-    await validateResponseWithJsonSchema(responseData, expectedShape, { validationMode: 'allow-extra' });
+    // Carrega o JSON de referência (contrato) para comparar com a resposta
+    const expectedShape = loadExpectedData(
+        folderPath,
+        'a.success.json'
+    );
+
+    // Valida se a estrutura e os tipos da resposta seguem o contrato
+    await validateResponseWithJsonSchema(
+        responseData,
+        expectedShape,
+        {
+            validationMode: 'allow-extra'
+        }
+    );
+
+    // Confere se a API marcou o registro como excluído
     expect(responseData.isDeleted).toBe(true);
 });

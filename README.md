@@ -1,9 +1,10 @@
 # Testes de API - Contratos com API Pública (DummyJSON)
 
-Testes de integração e contrato de API pública (https://dummyjson.com/docs), com Playwright.
+Testes de integração e contrato de API pública (https://dummyjson.com/docs), com Playwright e JavaScript, no padrão Page Object aplicado a APIs (Service Object).
 
 ![Testes](https://img.shields.io/badge/testes-55%20passando-brightgreen)
 ![Playwright](https://img.shields.io/badge/Playwright-contract%20testing-2EAD33)
+![Page Object](https://img.shields.io/badge/padr%C3%A3o-Page%20Object-blueviolet)
 ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-blue)
 
 ## 🚀 Como Começar
@@ -82,11 +83,136 @@ npm run allure:open        # serve e abre o relatório
 
 ## Por que uma API pública?
 
-Este projeto reproduz, com dados públicos, o mesmo padrão de arquitetura usado em projetos reais de automação: separação entre configuração, utilitários genéricos, fixtures de contrato e testes organizados por recurso/método/status.
+Este projeto reproduz, com dados públicos, o mesmo padrão de arquitetura usado em projetos reais de automação: separação entre configuração, serviços (Page Object), utilitários genéricos, fixtures de contrato e testes organizados por recurso/método/status.
+
+## Padrão Page Object aplicado a APIs (Service Object)
+
+Os testes não montam as requisições. Cada recurso da API tem uma classe de serviço, que sabe montar as chamadas daquele recurso. O teste só informa o que muda de um cenário para outro: o id, o corpo, o status esperado e a pasta do log.
+
+**`BaseService`** (`src/services/BaseService.js`) concentra o envio das requisições (chamando o `makeRequest`) e os métodos HTTP comuns a todos os recursos, escritos uma única vez:
+
+| Método | HTTP | Endpoint | O que faz |
+|---|---|---|---|
+| `post` | POST | `/{recurso}/add` | Cria um registro novo |
+| `getAll` | GET | `/{recurso}` | Consulta todos os registros |
+| `getId` | GET | `/{recurso}/{id}` | Consulta um registro específico |
+| `putId` | PUT | `/{recurso}/{id}` | Atualiza um registro específico |
+| `patchId` | PATCH | `/{recurso}/{id}` | Atualiza só os campos enviados |
+| `deleteId` | DELETE | `/{recurso}/{id}` | Exclui um registro específico |
+
+**Um serviço por recurso**, herdando direto do `BaseService` (um único nível de herança). Cada serviço informa os seus endpoints e escreve só os métodos exclusivos do recurso:
+
+| Serviço | Métodos exclusivos |
+|---|---|
+| `AuthService` | `postLogin`, `getMe` |
+| `ProductService` | `getSearch`, `getCategories`, `getByCategory` |
+| `UserService` | `getSearch` |
+| `CartService` | `getByUser` |
+| `PostService` | `getByUser` |
+| `TodoService` | `getRandom` |
+| `QuoteService` | `getRandom` (recurso só de consulta) |
+| `RecipeService` | `getSearch` (recurso só de consulta) |
+| `CommentService` | nenhum, usa só o CRUD do `BaseService` |
+
+**Como o teste usa o serviço:**
+
+```javascript
+// Cria o serviço de produtos, que sabe montar as chamadas desse recurso
+const productService = new ProductService(request);
+
+// Consulta o produto de id 1 e confere o status 200
+const {
+    responseData
+} = await productService.getId({
+    id: 1,
+    expectedStatus: 200,
+    saveResponseLog: folderPath
+});
+```
+
+**Manutenção quando a API muda:**
+
+- caminho do endpoint alterado → ajuste somente a constante em `src/config/endpoints.js`;
+- método HTTP ou autenticação alterados → ajuste somente o método no serviço;
+- dados enviados alterados → ajuste somente o JSON Request na pasta `request`;
+- contrato da resposta alterado → ajuste somente o JSON Response em `resources/fixtures`.
+
+Os testes continuam iguais nos quatro casos.
+
+## JSON Request e JSON Response
+
+Os dados enviados e os contratos esperados ficam em arquivos JSON, fora do código dos testes:
+
+| Arquivo | Conteúdo | Exemplo |
+|---|---|---|
+| JSON Request | Corpo enviado nas requisições de criação (POST) e atualização (PUT) | `resources/fixtures/public-api/products/POST/request/valid.json` |
+| JSON Response | Contrato esperado da resposta, por status | `resources/fixtures/public-api/products/POST/201/a.success.json` |
+
+O teste carrega o JSON Request com `loadJsonFixture` e envia o conteúdo como corpo da requisição:
+
+```javascript
+// Carrega o corpo da requisição (JSON Request) do arquivo
+const body = loadJsonFixture(
+    'resources/fixtures/public-api/products/POST/request/valid.json'
+);
+
+// Cria um produto novo e confere o status 201
+const {
+    responseData
+} = await productService.post({
+    body,
+    expectedStatus: 201,
+    saveResponseLog: folderPath
+});
+```
+
+Os testes de login são a exceção: o corpo usa o usuário e a senha definidos no `.env`, por isso é montado no próprio teste.
+
+## Atalhos de importação (sem `../../../../`)
+
+As importações usam atalhos que começam com `#`, em vez de caminhos relativos como `../../../../src/utils/requests`. Assim, o caminho é o mesmo em qualquer nível de pasta:
+
+```javascript
+const {
+    makeRequest
+} = require('#utils/requests');
+```
+
+A configuração fica no **`package.json`**, no campo `imports`, e é um recurso nativo do Node.js (não precisa instalar nada):
+
+```json
+"imports": {
+  "#config/*": "./src/config/*.js",
+  "#utils/*": "./src/utils/*.js",
+  "#services/*": "./src/services/*.js"
+}
+```
+
+| Atalho | Pasta |
+|---|---|
+| `#config/...` | `src/config/` |
+| `#utils/...` | `src/utils/` |
+| `#services/...` | `src/services/` |
+
+**Navegação no VS Code (Ctrl + clique):** o arquivo **`jsconfig.json`**, na raiz do projeto, faz o VS Code reconhecer os atalhos `#`. Com ele, Ctrl + clique (ou F12) sobre um método, como `getId`, abre o arquivo onde ele está escrito. Alt + ← volta ao arquivo anterior. O `jsconfig.json` só afeta o editor, não a execução dos testes.
+
+```json
+{
+    "compilerOptions": {
+        "module": "nodenext",
+        "moduleResolution": "nodenext"
+    },
+    "include": [
+        "src/**/*.js",
+        "tests/**/*.js"
+    ]
+}
+```
 
 ## Stack
 
 - **Playwright** (`@playwright/test`) para execução das requisições
+- **Page Object aplicado a APIs (Service Object)** para organizar as chamadas por recurso
 - **Joi** + **to-json-schema** para geração e validação de contrato (schema dinâmico a partir de uma amostra)
 - **Allure** para relatórios
 - **GitHub Actions** para CI/CD (roda a cada push e diariamente, para detectar quebras de contrato na API pública)
@@ -98,6 +224,11 @@ src/
   config/
     environment.js     # variáveis de ambiente (base URL, credenciais, token em cache)
     endpoints.js        # constantes de endpoints
+  services/
+    BaseService.js       # envio das requisições e CRUD comum (post, getAll, getId, putId, patchId, deleteId)
+    AuthService.js       # login e usuário autenticado
+    ProductService.js    # um serviço por recurso: Product, User, Cart, Todo,
+    ...                  # Post, Quote, Recipe e Comment
   utils/
     requests.js          # makeRequest() — função única para todos os métodos HTTP
     validators.js        # validação de contrato (schema/tipos) e validação exata
@@ -106,7 +237,9 @@ src/
 tests/
   {recurso}/{METODO}/{status}/*.spec.js
 resources/fixtures/
-  public-api/{recurso}/{METODO}/{status}/*.json   # "contratos" esperados (schema, não valor exato)
+  public-api/{recurso}/{METODO}/request/valid.json  # JSON Request: corpo enviado (POST e PUT)
+  public-api/{recurso}/{METODO}/{status}/*.json     # JSON Response: contratos esperados (schema, não valor exato)
+jsconfig.json            # faz o VS Code reconhecer os atalhos # (Ctrl + clique)
 docs/
   screenshots/          # capturas de tela da execução e dos relatórios
 logs/                    # responses reais salvas a cada execução (não versionado)
