@@ -1,0 +1,12 @@
+{
+  "recipes": [
+    {
+      "id": 1,
+      "name": "sample",
+      "cuisine": "American"
+    }
+  ],
+  "total": 50,
+  "skip": 0,
+  "limit": 30
+}

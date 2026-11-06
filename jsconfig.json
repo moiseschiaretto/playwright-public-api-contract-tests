@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@config/*": ["src/config/*"],
+            "@utils/*": ["src/utils/*"],
+            "@services/*": ["src/services/*"]
+        }
+    },
+    "include": ["src/**/*.js", "tests/**/*.js", "playwright.config.js"],
+    "exclude": ["node_modules"]
+}

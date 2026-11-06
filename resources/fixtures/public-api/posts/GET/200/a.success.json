@@ -1,0 +1,12 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "sample",
+      "userId": 1
+    }
+  ],
+  "total": 251,
+  "skip": 0,
+  "limit": 30
+}
